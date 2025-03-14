@@ -1,4 +1,4 @@
-![](https://raw.githubusercontent.com/gabrielfernando01/x-sentiment-spark-free/main/images/cover_readme.png)
+![](https://raw.githubusercontent.com/gabrielfernando01/x-sentiment-spark-free/main/image/cover_readme.png)
 
 # X Sentiment Analysis with Spark (AWS Free Tier).
 
@@ -20,3 +20,26 @@ This project analyzes sentiment in X (Twitter) posts about a political figure (e
 - 🔌 **Tools**: SBT 1.10.7, Maven 3.8.7, IntelliJ IDEA 24.04.
 - ☁️ **AWS**: Free Tier account (40 days remaining as of 13/03/2025).
 - 😼 **GitHub**: Existing account.
+
+***
+
+## Step 2: Configure AWS S3 ☁️
+
+Set up S3 buckets for input data and output results within the 5 GB free tier.
+
+1. Install AWS CLI (if not already installed):
+
+```
+$ aws --version
+# en caso de no estar instalado
+$ sudo apt install awscli
+aws configure  # Add your Access Key, Secret Key, region (e.g., us-east-1)
+```
+
+2. Create input and output buckets 🪣:
+
+```
+aws s3 mb s3://x-sentiment-input --region us-east-1
+aws s3 mb s3://x-sentiment-output --region us-east-1
+```
+
