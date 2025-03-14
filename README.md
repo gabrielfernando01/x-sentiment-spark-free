@@ -1,4 +1,4 @@
-![](https://raw.githubusercontent.com/gabrielfernando01/spark_def_guide/main/images/cover_readme.png)
+![](https://raw.githubusercontent.com/gabrielfernando01/x-sentiment-spark-free/main/images/cover_readme.png)
 
 # X Sentiment Analysis with Spark (AWS Free Tier).
 
