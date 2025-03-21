@@ -6,8 +6,8 @@ This project analyzes sentiment in X (Twitter) posts about a political figure (e
 
 - **Objective**: Learn Spark 💥, Scala 🟥, and AWS data workflows ☁️.
 - **Dataset**: Public X posts (1-2 GB, within S3's 5 GB free tier).
-- **Processing**: Spark 3.5.1 on an EC2 t2.micro instance (no EMR).
-- **Storage**: S3 buckets for input and output.
+- **Processing**: Spark 3.5.1 on an EC2 <code>t2.micro</code> instance (no EMR).
+- **Storage**: S3 buckets 🪣 for input and output.
 - **Repo**: `x-sentiment-spark-free`.
 
 ## Prerequisites.
