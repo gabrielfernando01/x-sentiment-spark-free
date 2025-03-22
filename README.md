@@ -118,10 +118,10 @@ aws s3 mb s3://x-sentiment-output-username --region us-east-1
 
 <code>aws s3 ls</code>
 
-8. Download a public X dataset (e.g., "Sentiment Analysis Dataset Crowdflower" en Kaggle):
+8. Download 📩 a public X dataset (e.g., "Sentiment Analysis Dataset Crowdflower" en Kaggle):
 
-- Example: [Sentiment Analysis Dataset](https://www.kaggle.com/datasets/kazanova/sentiment140)
-- Archivo a descargar: Descarga el archivo <code>training.1600000.processed.noemoticon.csv</code> (o similar, dependiendo de la fuente).
+- Example: [US Election 2020 Tweets](https://www.kaggle.com/datasets/manchunhui/us-election-2020-tweets)
+- Archivo a descargar: Descarga el archivo <code></code> (o similar, dependiendo de la fuente).
 
 8.1 Filtrar el dataset antes de subirlo a S3.
 
@@ -148,23 +148,6 @@ Usa el siguiente script para filtrar los tweets que mencionen "Donald Trump" (o 
 ```
 import pandas as pd
 
-# Carga el dataset
-df = pd.read_csv("training.1600000.processed.noemoticon.csv", encoding='latin-1', names=["target", "ids", "date", "flag", "user", "text"])
-
-# Filtra tweets que mencionen "Donald Trump" (puedes cambiar a "elecciones 2024" u otro tema)
-df_filtered = df[df['text'].str.contains("Donald Trump", case=False, na=False)]
-
-# Convierte etiquetas de sentimiento (0=negativo, 4=positivo)
-df_filtered['sentiment'] = df_filtered['target'].map({0: 'negative', 4: 'positive'})
-
-# Selecciona columnas relevantes
-df_filtered = df_filtered[['date', 'text', 'sentiment']]
-
-# Guarda el dataset filtrado
-df_filtered.to_csv("filtered_tweets.csv", index=False)
-
-# Imprime el número de filas y tamaño del archivo
-print(f"Filas filtradas: {len(df_filtered)}")
 ```
 
 9. Upload the dataset to S3:
