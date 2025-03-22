@@ -17,13 +17,13 @@ This project analyzes sentiment in X (Twitter) posts about a political figure (e
 - ☕ **Java**: OpenJDK 11 (`/usr/lib/jvm/java-11-openjdk-amd64`).
 - 🟥 **Scala**: 2.13.8 (`/usr/local/share/scala`).
 - 💥 **Spark**: 3.5.1 (`/opt/spark`).
-- 🔌 **Tools**: SBT 1.10.7, Maven 3.8.7, IntelliJ IDEA 24.04.
+- 🔌 **Tools**: SBT 1.10.7, Maven 3.8.7, IntelliJ IDEA 24.1.
 - ☁️ **AWS**: Free Tier account (40 days remaining as of 13/03/2025).
 - 😼 **GitHub**: Existing account.
 
 ***
 
-## Project Setup and Workflow.
+## Project Setup and Workflow ⚙️🛠️.
 
 ### Step 1: Initialize GitHub 😺 Repository.
 
@@ -64,21 +64,110 @@ Set up S3 buckets 🪣 for input data and output results within the 5 GB free ti
 $ aws --version
 # en caso de no estar instalado
 $ sudo apt install awscli
-aws configure  # Add your Access Key, Secret Key, region (e.g., us-east-1)
+$ aws configure  # Add your Access Key, Secret Key, region (e.g., us-east-1)
 ```
 
-2. Create input and output buckets 🪣:
+🔑 **Obten tu Access Key y Secret Key**
+
+2. **Inicia sesión en AWS**
+
+- Ve a AWS Management Console con tu cuenta actual.
+
+3. **Accede a IAM (Identity and Access Management)**:
+
+- Generar credenciales y asignar permisos a <code>User</code>
+- Selecciona al usuario o agrega uno. Dirigete a menu <code>Agregar Permisos</code> y elige <code>Adjuntar políticas directamente</code>.
+- En el buscador de políticas, escribe y selecciona:
+	+ <code>AmazonS3FullAccess</code>: Esto permite leer y escribir en S3, necesario para tu proyecto.
+	+ (Opcional)<code>AmazonEC2FullAccess</code>: Si quieres administrar instancias EC2 desde el CLI.
+	
+![](https://raw.githubusercontent.com/gabrielfernando01/x-sentiment-spark-free/main/image/permissions.png)
+
+4. **Genera un Access Key 🔑 para <code>User</code>**
+
+- En el perfil de <code>usuario</code> ve a la pestaña **"Access key"**.
+- Haz clic en **Crear clave de acceso**.
+- Selecciona el caso de uso: **Interfaz de línea de comando (CLI)**.
+
+5. Configura <code>aws configure</code> con las credenciales de <code>User</code>.
+
+Ahora que tienes las credenciales, regresa a tu terminal en Kubuntu y ejecuta <code>aws configure</code>.
+
+<code>$ aws configure</code>
+
++ **Ingresa credenciales**
+	+ **AWS Access Key ID**: <code>XXXXXXXXXXXXXX</code>.
+	+ **AWS Secret Access Key**: XXXXXXXXXXXX</code>.
+	+ **Default region name**: Usa <code>us-east-1</code>, que es común y compatible con la capa gratuita.
+	+ **Default output forma**: <code>json</code>.
+	
+6. Verifica la configuración
+
+Prueba que las credencialers funcionan:
+
+<code>$ aws s3 ls</code>
+
+7. Create input and output buckets 🪣:
 
 ```
-aws s3 mb s3://x-sentiment-input --region us-east-1
-aws s3 mb s3://x-sentiment-output --region us-east-1
+aws s3 mb s3://x-sentiment-input-username --region us-east-1
+aws s3 mb s3://x-sentiment-output-username --region us-east-1
 ```
 
-3. Download a public X dataset (e.g., Sentiment140 or Kaggle's Twitter data, ~1 GB):
+**Checkpoint**: Verifica los buckets 🪣:
 
-- Example: [pysentimiento/spanish-tweets-small](https://huggingface.co/datasets/pysentimiento/spanish-tweets-small/viewer/default/train)(CSV format: <code>timestamp</code>, <code>text</code>).
+<code>aws s3 ls</code>
 
-4. Upload the dataset to S3:
+8. Download a public X dataset (e.g., "Sentiment Analysis Dataset Crowdflower" en Kaggle):
+
+- Example: [Sentiment Analysis Dataset](https://www.kaggle.com/datasets/kazanova/sentiment140)
+- Archivo a descargar: Descarga el archivo <code>training.1600000.processed.noemoticon.csv</code> (o similar, dependiendo de la fuente).
+
+8.1 Filtrar el dataset antes de subirlo a S3.
+
+Dado que el dataset (<code>training.1600000.processed.noemoticon.csv</code>) contiene 1.6 millones de tweets y no todos son relevantes para tu análisis (sentimientos sobre "Donald Trump" o "elecciones 2024"), filtrarlo antes de subirlo a S3 es una buena práctica. Esto reduce el tamaño del archivo, optimiza el uso del almacenamiento en S3 y hace que el procesamiento en Spark 💥 sea más eficiente.
+
+**Pasos para filtrar el dataset**
+
+8.1.1 **Verifica el tamaño del dataset**
+
+- Abre el fichero para confirmar su estructura, el formato debe ser el siguiente:
+
+```
+"target","ids","date","flag","user","text"
+0,1467810369,"Mon Apr 06 22:19:45 PDT 2009","NO_QUERY","user1","I hate mondays"
+4,1467810672,"Mon Apr 06 22:19:49 PDT 2009","NO_QUERY","user2","I love this sunny day"
+```
+
+- Columnas relevantes: <code>target</code> (sentimiento: 0=negativo, 4=positivo), <code>date</code> (fecha), <code>text</code> (contenido del tweet).
+
+8.1.2 **Filtra el dataset con Python 🐍**
+
+Usa el siguiente script para filtrar los tweets que mencionen "Donald Trump" (o el tema de tu elección, como "elecciones 2024"):
+
+```
+import pandas as pd
+
+# Carga el dataset
+df = pd.read_csv("training.1600000.processed.noemoticon.csv", encoding='latin-1', names=["target", "ids", "date", "flag", "user", "text"])
+
+# Filtra tweets que mencionen "Donald Trump" (puedes cambiar a "elecciones 2024" u otro tema)
+df_filtered = df[df['text'].str.contains("Donald Trump", case=False, na=False)]
+
+# Convierte etiquetas de sentimiento (0=negativo, 4=positivo)
+df_filtered['sentiment'] = df_filtered['target'].map({0: 'negative', 4: 'positive'})
+
+# Selecciona columnas relevantes
+df_filtered = df_filtered[['date', 'text', 'sentiment']]
+
+# Guarda el dataset filtrado
+df_filtered.to_csv("filtered_tweets.csv", index=False)
+
+# Imprime el número de filas y tamaño del archivo
+print(f"Filas filtradas: {len(df_filtered)}")
+```
+
+9. Upload the dataset to S3:
 
 ```
 aws s3 cp posts.csv s3://x-sentiment-input/
@@ -95,7 +184,7 @@ Write and test the Scala/Spark 🟥💥 code on your laptop 💻 before deployin
 1. Open IntelliJ IDEA 🟧, import the project, and ensure SBT resolves dependencies (<code>build.sbt</code>).
 2.  Configure Spark 💥 to access S3 locally:
 
-- Edit <code>$SPARK_HOME/conf/spark-default.conf</code>:
+- Edit <code>$SPARK_HOME/conf/spark-default.conf</code>, si no existe el fichero crealo:
 
 ```
 spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem
@@ -121,10 +210,16 @@ spark.hadoop.fs.s3a.secret.key=<your-secret-key>
 
 Deploy Spark 💥 on an EC2 <code>t2.micro</code> instance within the 750-hour free tier.
 
-1. Launch 🚀 a <code>t2.micro</code> instance:
+1. Create an IAM Role for EC2:
+	- Go to IAM > Roles > Create role.
+	- Select "AWS service" > "EC2"
+	- Attach 'AmazonS3FullAccess' policy.
+	- Name it 'EC2-S3-Role' and create.
+
+2. Launch 🚀 a <code>t2.micro</code> instance with the IAM role:
 
 ```
-aws ec2 run-instances --image-id ami-0c55b159cbfafe1f0 --instance-type t2.micro --key-name <your-key> --region us-east-1
+$ aws ec2 run-instances --image-id ami-0c55b159cbfafe1f0 --instance-type t2.micro --key-name <your-key> --iam-instance-profile Name:EC2-S3-Role --region us-east-1
 ```
 
 - Note the instance ID (e.g., <code>i-1234567890abcdef0</code>).
@@ -148,12 +243,24 @@ echo "export PATH=$PATH:$SPARK_HOME/bin" >> ~/.bashrc
 source ~/.bashrc
 ```
 
-4. Clone the repo and configure S3 access:
+4. Clone the repo and configure Spark for S3 (using IAM role):
 
 ```
-git clone https://github.com/<your-username>/x-sentiment-spark-free.git
-cd x-sentiment-spark-free
-cp scripts/setup_spark.sh .
+$ git clone https://github.com/<your-username>/x-sentiment-spark-free.git
+$ cd x-sentiment-spark-free
+$ nvim /opt/spark/conf/spark-default.conf
+```
+
+Add:
+
+```
+spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem
+spark.hadoop.fs.s3a.aws.credentials.provider=com.amazonaws.auth.InstanceProfileCredentialsProvider
+```
+
+En el README anterior pedia hacer lo siguiente:
+
+```cp scripts/setup_spark.sh .
 bash setup_spark.sh  # Add AWS credentials to spark-defaults.conf
 ```
 
