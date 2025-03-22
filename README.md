@@ -118,10 +118,10 @@ aws s3 mb s3://x-sentiment-output-username --region us-east-1
 
 <code>aws s3 ls</code>
 
-8. Download 📩 a public X dataset (e.g., "Sentiment Analysis Dataset Crowdflower" en Kaggle):
+8. Download a public X dataset (e.g., "Sentiment Analysis Dataset Crowdflower" en Kaggle):
 
-- Example: [US Election 2020 Tweets](https://www.kaggle.com/datasets/manchunhui/us-election-2020-tweets)
-- Archivo a descargar: Descarga el archivo <code></code> (o similar, dependiendo de la fuente).
+- Example: [Sentiment Analysis Dataset](https://www.kaggle.com/datasets/kazanova/sentiment140)
+- Archivo a descargar: Descarga el archivo <code>training.1600000.processed.noemoticon.csv</code> (o similar, dependiendo de la fuente).
 
 8.1 Filtrar el dataset antes de subirlo a S3.
 
@@ -143,12 +143,7 @@ Dado que el dataset (<code>training.1600000.processed.noemoticon.csv</code>) con
 
 8.1.2 **Filtra el dataset con Python 🐍**
 
-Usa el siguiente script para filtrar los tweets que mencionen "Donald Trump" (o el tema de tu elección, como "elecciones 2024"):
-
-```
-import pandas as pd
-
-```
+Usa el siguiente script de la directorio <code>scripts</code> para filtrar los tweets que mencionen "Barack Obama" (o el tema de tu elección, como "elecciones 2008")
 
 9. Upload the dataset to S3:
 
