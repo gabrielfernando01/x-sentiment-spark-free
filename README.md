@@ -1,10 +1,10 @@
 ![](https://raw.githubusercontent.com/gabrielfernando01/x-sentiment-spark-free/main/image/cover_readme.png)
 
-# X Sentiment Analysis with Spark 💥 (AWS ☁️ Free Tier).
+# X Sentiment Analysis with Spark ⭐ (AWS ☁️ Free Tier).
 
-This project analyzes sentiment in X (Twitter) posts about a political figure (e.g., "Donald Trump") or event (e.g., "2024 elections") using Apache Spark 💥 in Scala 🟥. It counts sentiments (positive, negative, neutral) per day and stores results in AWS S3, all within the AWS Free Tier for educational purposes.
+This project analyzes sentiment 💜 in X (Twitter) posts about a political figure (e.g., "Donald Trump") or event (e.g., "2024 elections") using Apache Spark 💥 in Scala 🟥. It counts sentiments (positive, negative, neutral) per day and stores results in AWS S3, all within the AWS Free Tier for educational purposes.
 
-- **Objective**: Learn Spark 💥, Scala 🟥, and AWS data workflows ☁️.
+- **Objective**: Learn Spark ⭐, Scala 🟥, and AWS data workflows ☁️.
 - **Dataset**: Public X posts (1-2 GB, within S3's 5 GB free tier).
 - **Processing**: Spark 3.5.1 on an EC2 <code>t2.micro</code> instance (no EMR).
 - **Storage**: S3 buckets 🪣 for input and output.
@@ -23,9 +23,9 @@ This project analyzes sentiment in X (Twitter) posts about a political figure (e
 
 ***
 
-## Project Setup and Workflow ⚙️🛠️.
+## 🎱 Project Setup and Workflow ⚙️🛠️.
 
-### Step 1: Initialize GitHub 😺 Repository.
+### Step 1: Initialize GitHub Repository.
 
 Create a GitHub 😺 repository to version control the project.
 
@@ -54,7 +54,7 @@ $ git push origin main
 
 **Checkpoint**: Verify the repo exists on GitHub 😺 with all files.
 
-### Step 2: Configure AWS S3 ☁️.
+### 🔥 Step 2: Configure AWS S3.
 
 Set up S3 buckets 🪣 for input data and output results within the 5 GB free tier.
 
@@ -155,12 +155,12 @@ aws s3 cp posts.csv s3://x-sentiment-input/
 
 ***
 
-### Step 3: Develop Spark 💥 Code Locally.
+### 📌 Step 3: Develop Spark Code Locally.
 
-Write and test the Scala/Spark 🟥💥 code on your laptop 💻 before deploying to AWS ☁️.
+Write and test the Scala/Spark code on your laptop 💻 before deploying to AWS ☁️.
 
 1. Open IntelliJ IDEA 🟧, import the project, and ensure SBT resolves dependencies (<code>build.sbt</code>).
-2.  Configure Spark 💥 to access S3 locally:
+2.  Configure Spark ⭐ to access S3 locally:
 
 - Edit <code>$SPARK_HOME/conf/spark-default.conf</code>, si no existe el fichero crealo:
 
@@ -184,9 +184,9 @@ spark.hadoop.fs.s3a.secret.key=<your-secret-key>
 
 ***
 
-### Step 4: Launch 🚀 EC2 Instance.
+### 🚀 Step 4: Launch EC2 Instance.
 
-Deploy Spark 💥 on an EC2 <code>t2.micro</code> instance within the 750-hour free tier.
+Deploy Spark ⭐ on an EC2 <code>t2.micro</code> instance within the 750-hour free tier.
 
 1. Create an IAM Role for EC2:
 	- Go to IAM > Roles > Create role.
@@ -246,7 +246,7 @@ bash setup_spark.sh  # Add AWS credentials to spark-defaults.conf
 
 ***
 
-### Step 5: Execute Spark 💥 Job on EC2.
+### ⭐ Step 5: Execute Spark Job on EC2.
 
 Run the sentiment analysis job and store result in S3.
 
@@ -276,7 +276,7 @@ aws ec2 stop-instances --instance-id i-1234567890abcdef0
 
 ***
 
-### Step 6. Validate and Migrate (in 40 Days).
+### 🍰 Step 6. Validate and Migrate (in 40 Days).
 
 After 40 days, migrate to a new AWS Free Tier account.
 
